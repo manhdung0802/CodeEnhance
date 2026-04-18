@@ -6,9 +6,9 @@ poor code quality, silent failures, hallucinated APIs, and unsafe patterns.
 
 ## Naming and scope
 
-- Never shadow or reassign built-in / reserved names (`list`, `type`, `map`, `Array`, `Object`, `string`, etc.).
+- Never shadow or reassign built-in / reserved names (`std`, `errno`, `main`, etc.).
 - Use descriptive names. Single-letter identifiers are acceptable only for loop indices (`i`, `j`, `k`).
-- Prefer `const` / `final` / `val` / `readonly` over mutable bindings when the value never changes.
+- Prefer `const` / `constexpr` over mutable bindings when the value never changes.
 
 ## Algorithm and data structure choice
 
@@ -19,23 +19,20 @@ poor code quality, silent failures, hallucinated APIs, and unsafe patterns.
 ## Resource management
 
 - Always use the language's idiomatic resource-management construct:
-  - Python → `with`
-  - Java / Kotlin → `try-with-resources`
-  - C# → `using`
-  - Go → `defer`
-  - C++ → RAII / smart pointers
-- File handles, sockets, database connections, and locks must be released on all exit paths — success and error.
+  - C → `goto` cleanup labels or careful manual management
+  - C++ → RAII / smart pointers (`std::unique_ptr`, `std::shared_ptr`)
+- File descriptors, sockets, database connections, and locks must be released on all exit paths — success and error.
 
 ## Asynchronous and I/O patterns
 
-- Prefer async / non-blocking I/O wherever the language and runtime support it.
-- Never issue synchronous network calls that block the main thread or event loop.
-- Do not use deprecated I/O APIs (e.g., synchronous `XMLHttpRequest`, bare `threading.Thread` without lifecycle management).
+- Prefer async / non-blocking I/O (e.g., `epoll`, `io_uring`, `select/poll`) wherever the system supports it.
+- Never issue synchronous block network calls that hang the main thread or event loop.
+- Do not use deprecated Linux APIs (e.g., prefer `epoll` over `select` for high performance).
 
 ## Error handling
 
-- Never swallow errors silently. A bare `except: pass`, `catch {}`, or `_ = err` is always wrong unless explicitly justified with a comment.
-- Always catch the most specific exception / error type available.
+- Never swallow errors silently. Ignoring return values of standard library functions (like `read`, `write`, `malloc`) or an empty `catch (...) {}` is always wrong unless explicitly justified with a comment.
+- Always catch the most specific `std::exception` / error type available in C++, or properly check `errno` in C.
 - Include actionable context in error messages: what operation failed, with what values, and why.
 - Validate inputs at system boundaries (public functions, API handlers, CLI entry points). Do not re-validate deep inside pure logic.
 

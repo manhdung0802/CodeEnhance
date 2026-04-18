@@ -10,7 +10,7 @@ with false confidence, skip edge-case analysis, and hallucinate API signatures.
 ## Before writing any code
 
 1. **Restate the problem** in your own words to confirm the goal is correctly understood.
-2. **Identify constraints and edge cases**: empty inputs, null/nil/None, overflow, concurrency, network failure.
+2. **Identify constraints and edge cases**: empty inputs, `NULL`/`nullptr`, overflow, concurrency, network failure, out-of-memory.
 3. **Choose an algorithm or pattern explicitly**: name it, explain why it fits, and state its time and space complexity — O(?) notation inline.
 4. **Verify API existence**: if you are not certain a function or module exists in the target language/version, say so. Do not fabricate a signature.
 
@@ -31,7 +31,7 @@ with false confidence, skip edge-case analysis, and hallucinate API signatures.
 
 - [ ] Every function, method, and module referenced actually exists in the stated version.
 - [ ] No example output was invented; any shown output reflects real execution or is clearly labeled "expected output".
-- [ ] Version-specific features state the minimum version they require (e.g., `Python ≥ 3.10`, `Node ≥ 18`).
+- [ ] Version-specific features state the minimum version they require (e.g., `C++17`, `C++20`, `Linux kernel >= 5.1`).
 - [ ] External library names and their APIs are cross-checked against known documentation, not guessed.
 
 ## Complexity communication
@@ -42,7 +42,7 @@ When the problem involves a non-trivial algorithm, always state:
 - **Trade-offs**: what is sacrificed (memory, simplicity, generality) in exchange for better performance.
 
 Example annotation:
-```python
-# Merge sort — O(n log n) time, O(n) auxiliary space.
-# Chosen over quicksort for stable sort guarantee on linked structures.
+```cpp
+// Merge sort — O(n log n) time, O(n) auxiliary space.
+// Chosen over quicksort for stable sort guarantee on linked structures.
 ```

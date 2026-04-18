@@ -7,22 +7,22 @@ applyTo: "**"
 
 ## Anti-patterns — never do these
 
-- **Built-in shadowing**: Do not reassign or shadow built-in / reserved names
-  (`list`, `type`, `map`, `filter`, `Array`, `Object`, `string`, `error`, etc.).
-- **Silent failure**: Do not use bare `except: pass`, `catch {}`, or `if err != nil { _ = err }` without an explicit comment explaining the deliberate discard.
+- **Built-in shadowing**: Do not reassign or shadow built-in / reserved names or standard library symbols
+  (`std`, `malloc`, `free`, `errno`, etc.).
+- **Silent failure**: Do not use empty `catch (...) {}` or ignore system call return values (`(void)read(...)`) without an explicit comment explaining the deliberate discard.
 - **Resource leaks**: Do not open files, sockets, or connections without a guaranteed cleanup path on both success and error exits.
-- **Blocking I/O on the main thread**: Do not issue synchronous network requests (e.g., sync `XMLHttpRequest`, Python `requests` on an asyncio loop, blocking DB calls in a UI thread).
+- **Blocking I/O on the main thread**: Do not issue synchronous network requests that block the main event loop in networked applications.
 - **Deprecated APIs**: Do not use APIs the language/runtime has deprecated — check the standard library first.
-- **Reinventing standard library**: Do not reimplement sort, search, hash, or serialization when a standard library function exists.
-- **Mutable when constant**: Do not declare a variable as mutable (`var`, `let`, unqualified declarations) when the value never changes after initialization.
+- **Reinventing standard library**: Do not reimplement sort, search, or hash when a standard library function exists (e.g. `std::sort`).
+- **Mutable when constant**: Do not declare a variable as mutable when the value never changes after initialization.
 
 ## Required practices
 
-- **Idiomatic resource management**: Use `with` (Python), `try-with-resources` (Java/Kotlin), `using` (C#), `defer` (Go), RAII/smart-pointers (C++).
-- **Specific exceptions**: Catch the narrowest exception/error type possible; include the operation and relevant values in the message.
-- **Type information**: Include type hints, annotations, or generics where the language supports them; do not use `any` / `object` / `interface{}` unless truly required.
+- **Idiomatic resource management**: Use RAII/smart-pointers (`std::unique_ptr`, `std::shared_ptr`) in C++ or careful manual management with `goto` cleanup labels in C.
+- **Specific exceptions**: Catch the narrowest exception/error type possible; include the operation and relevant values in the message. Check `errno` immediately after system calls.
+- **Type information**: Prefer strongly typed constructs; do not use `void*` unless truly required by a C API.
 - **Complexity annotation**: When using a non-trivial algorithm, annotate its time and space complexity with a short inline comment.
-- **Immutable by default**: Prefer `const` / `final` / `val` / `readonly` bindings unless mutation is explicitly needed.
+- **Immutable by default**: Prefer `const` / `constexpr` bindings unless mutation is explicitly needed.
 
 ## Naming
 

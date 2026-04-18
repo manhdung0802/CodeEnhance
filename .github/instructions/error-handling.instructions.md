@@ -22,8 +22,8 @@ Wrap all external operations (file I/O, network, database, sub-process, third-pa
 ## Language-agnostic checklist
 
 Before considering any error-handling implementation complete, verify:
-- [ ] No bare `catch {}` / `except: pass` / `if err != nil { _ = err }` without an explanatory comment.
-- [ ] Resources (files, connections, locks) are freed on both success and error paths.
+- [ ] No empty `catch (...) {}` or blindly ignored system call return values without an explanatory comment.
+- [ ] Resources (file descriptors, connections, mutexes) are freed on both success and error paths.
 - [ ] Retries — if applicable — use exponential backoff with a capped maximum attempt count.
 - [ ] User-facing messages do not expose internal stack traces, file paths, or sensitive data.
 - [ ] Errors are logged or surfaced at the appropriate severity level (debug / info / warn / error / fatal).
@@ -33,15 +33,15 @@ Before considering any error-handling implementation complete, verify:
 
 | Anti-pattern | Why it is wrong |
 |---|---|
-| `except Exception: pass` | Hides all errors including bugs, KeyboardInterrupt, SystemExit. |
-| `catch (Exception e) {}` | Swallows the error; caller and operator see nothing. |
-| Returning `null`/`None`/`undefined` on error | Forces every caller to check for null with no context about why it failed. |
+| `catch (...) {}` | Hides all errors including critical system exceptions. |
+| Ignoring `malloc`/`calloc` return | Leads to segfaults on Out-Of-Memory conditions. |
+| Returning `NULL`/`nullptr` on error | Forces every caller to check for null with no context about why it failed. |
 | Catching broad type to check message string | Fragile; error text is not a stable API surface. |
 | Retrying without backoff | Can flood downstream services and worsen cascading failures. |
 
 ## Result / Option types (preferred where idiomatic)
 
-In languages that support them (`Result<T,E>` in Rust, `Either` in Haskell/Scala/Arrow, `std::expected` in C++23), prefer returning typed error values over throw/catch for expected failure conditions.
+In languages that support them (`std::expected` or `std::optional` in C++23/C++17), prefer returning typed error values over throw/catch for expected failure conditions.
 
 ## Error message template
 
